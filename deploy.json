@@ -1,0 +1,20 @@
+{
+  "apps" : [{
+    "name"      : "elect",
+    "script"    : "elect.js",
+    "instances" : "1",
+    "exec_mode" : "cluster",
+    "node_args": ["-r", "@std/esm"],
+    "cwd": ".",
+    "env": {
+      "NODE_ENV": "production"
+    },
+    "watch"             : false,
+    "log_date_format"   : "YYYY-MM-DD HH:mm:ss.SSS",
+    "merge_logs"        : true,
+    "error_file"        : "~/.pm2/logs/elect/error.log",
+    "out_file"          : "~/.pm2/logs/elect/output.log",
+    "max_memory_restart": "1G"
+  }]
+}
+

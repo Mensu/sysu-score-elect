@@ -1,0 +1,43 @@
+{
+  "extends": "airbnb-base",
+  "env": {
+    "node": true
+  },
+  "globals": {
+
+  },
+  "plugins": [
+    "import"
+  ],
+  "rules": {
+    "no-use-before-define": ["error", { "functions": false }],
+    "no-const-assign": "error",
+    "no-undef": "error",
+    "consistent-return": "off",
+    "no-unused-vars": "warn",
+    "no-underscore-dangle": "off",
+    "import/no-dynamic-require": "off",
+    "no-param-reassign": "off",
+    "no-restricted-syntax": "off",
+    "no-shadow-restricted-names": "error",
+    "no-shadow": "warn",
+    "no-multi-assign": "off",
+    "no-prototype-builtins": "off",
+    "camelcase": "off",
+    "no-continue": "off",
+    "global-require": "off",
+    "no-sparse-arrays":"off",
+    "no-mixed-operators": "off",
+    "object-property-newline": "off",
+    "no-await-in-loop": "off",
+    "no-loop-func": "off",
+    "no-plusplus": "warn",
+    "class-methods-use-this": "warn",
+    "no-multi-spaces": ["error", { "ignoreEOLComments": true }],
+    "comma-style": ["error", "last", { "exceptions": { "ArrayExpression": true } }],
+    "object-curly-newline": ["error", { "consistent": true }],
+    "function-paren-newline": "off",
+    "import/prefer-default-export" : "off",
+    "no-console": "off"
+  }
+}
