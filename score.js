@@ -82,11 +82,11 @@ async function poll() {
   const curScore = await queryScore();
   if (!curScore) return;
   console.log('获取数据成功');
-  // if (Object.keys(score).length === 0) {
-  //   console.log('是首次获取');
-  //   score = curScore;
-  //   return;
-  // }
+  if (Object.keys(score).length === 0) {
+    console.log('是首次获取');
+    score = curScore;
+    return;
+  }
   const newScores = Object.keys(curScore).filter(id => !score.hasOwnProperty(id));
   if (newScores.length === 0) {
     console.log('没有新的成绩');
