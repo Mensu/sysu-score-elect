@@ -17,3 +17,12 @@ node -r @std/esm elect.js
 npm i -S -g pm2
 pm2 startOrReload deploy.json
 ```
+
+## docker
+
+对ppp进行NAT
+
+```
+modprobe ip_nat_pptp
+modprobe ip_conntrack_pptp
+```

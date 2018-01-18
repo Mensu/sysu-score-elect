@@ -1,0 +1,10 @@
+pty "pptp vpn.sysu.org.cn --nolaunchpppd"
+lock
+noauth
+nobsdcomp
+nodeflate
+name ${USERNAME}
+remotename sysu
+ipparam sysu
+mppe-stateful
+require-mppe-128
