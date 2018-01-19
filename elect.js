@@ -21,10 +21,8 @@ async function checkLogin() {
         jar = null;
       } else {
         jar.location = href;
+        return;
       }
-    }
-    if (jar) {
-      return;
     }
     console.log('重新登录中...');
     jar = await login.elect(...config.credentials);
@@ -124,8 +122,7 @@ async function poll() {
 }
 
 async function loop() {
-  const toContinue = true;
-  while (toContinue) {
+  while (true) {
     poll().catch(e => console.error('轮询未知错误', e));
     await setTimeoutAsync(config.pollInterval.elect || 30 * 1000);
   }

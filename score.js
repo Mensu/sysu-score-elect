@@ -16,13 +16,14 @@ async function checkLogin() {
     if (jar) {
       try {
         const result = await req.get('http://wjw.sysu.edu.cn/api/tno', { jar });
-        if (result === 'expired') jar = null;
+        if (result === 'expired') {
+          jar = null;
+        } else {
+          return;
+        }
       } catch (e) {
         jar = null;
       }
-    }
-    if (jar) {
-      return;
     }
     console.log('重新登录中...');
     jar = await login.wjw(...config.credentials);
@@ -99,8 +100,7 @@ async function poll() {
 }
 
 async function loop() {
-  const toContinue = true;
-  while (toContinue) {
+  while (true) {
     poll().catch(e => console.error('轮询未知错误', e));
     await sleep();
   }
