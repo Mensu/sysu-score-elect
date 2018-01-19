@@ -6,8 +6,6 @@ services:
       dockerfile: Dockerfile
     image: sysu-score-elect:1.0.0
     container_name: sysu-score-elect
-    environment:
-      USE_VPN: enen
     volumes:
       - /TODO/config:/sysu-score-elect/config
       - /TODO/log/elect:/var/log/elect
