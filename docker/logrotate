@@ -1,0 +1,5 @@
+/var/log/*/output.log /var/log/*/error.log {
+  daily
+  maxsize 1M
+  dateformat -%Y-%m-%d-%s
+}

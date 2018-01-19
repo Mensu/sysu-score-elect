@@ -97,7 +97,10 @@ async function tryElectCourse(policy) {
   const { xkjdszid, type, match, unelect } = policy;
   const coursesList = await queryCourseList(xkjdszid);
   console.log(`获取${type}数据成功`);
-  const target = coursesList.find(match);
+  const target = coursesList.find((course) => {
+    if (!course.classId) return false;
+    return match(course);
+  });
 
   if (target) {
     sendProgressing(target).catch(e => console.error('发送正在抢课通知失败', e));

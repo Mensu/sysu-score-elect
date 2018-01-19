@@ -33,6 +33,14 @@ export default {
   // -------------------------------------------------------------------
   // -------------------------------------------------------------------
   // TODO
+  // 注释掉 vpn 则不使用 vpn
+  vpn: {
+    remote: 'vpn.sysu.org.cn',
+    // 可选，如果不填，则使用上面的 credential
+    // username: 'username',
+    // password: 'password',
+  },
+  // TODO
   courses: [
     {
       // 公必、公选、专必、专选
@@ -66,7 +74,7 @@ export default {
         from: '发件人 <发件人邮箱>',
         to: '收件人邮箱',
       },
-      path: path.join(__dirname, 'notification.pug'),
+      path: path.join(__dirname, '..', 'notification.pug'),
     },
     // 不需要微信提醒，就把微信这个字段注释掉，像这样
     // wechat: {

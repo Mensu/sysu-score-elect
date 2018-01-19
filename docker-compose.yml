@@ -1,0 +1,27 @@
+version: '2'
+services:
+  sysu-score-elect:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sysu-score-elect:1.0.0
+    container_name: sysu-score-elect
+    environment:
+      USE_VPN: enen
+    volumes:
+      - /TODO/config:/sysu-score-elect/config
+      - /TODO/log/elect:/var/log/elect
+      - /TODO/log/score:/var/log/score
+    privileged: true
+    tty: true
+    restart: always
+    networks:
+      - sysu-score-elect-network
+
+networks:
+  sysu-score-elect-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.169.111.0/24
