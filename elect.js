@@ -54,13 +54,16 @@ async function queryCourseList(xkjdszid) {
   url.searchParams.set('xkjdszid', xkjdszid);
   const html = await req.get(url, { jar });
   const $ = await parseAsync(html);
+  /** @type {Course[]} */
   const courses = [];
   $('body .toolbar + .grid-container .grid tbody tr').each((rowIndex, row) => {
+    /** @type {Course} */
     const one = {};
     $(row).find('td').each((colIndex, col) => {
       const propName = propNames[colIndex];
       if (colIndex === 0) {
-        one.classId = $(col).find('.xk-div a').attr('jxbh');
+        one.electable = Boolean($(col).find('.xk-div a').length);
+        one.classId = $(col).find('a').attr('jxbh');
       } else if (propName) {
         one[propName] = $(col).text().trim();
       }
@@ -89,25 +92,73 @@ async function op(action, xkjdszid, classId) {
 
 /**
  *
- * @param {{ xkjdszid: string, match: (course: any): boolean, unelect?: string }} policy
+ * @param {string} html
+ * @return {ElectResult}
+ */
+async function parseResult(html) {
+  const $ = await parseAsync(html);
+  const result = $('textarea').text();
+  try {
+    return JSON.parse(result);
+  } catch (e) {
+    throw new Error(`[parseResult] ${e.message}: ${result}`);
+  }
+}
+
+/**
+ *
+ * @param {string} xkjdszid
+ * @param {string} unelect
+ * @param {boolean} muteOnSuccess
+ */
+async function electBack(xkjdszid, unelect, muteOnSuccess) {
+  const html = await op('elect', xkjdszid, unelect);
+  const result = await parseResult(html);
+  console.log(unelect, '回抢结果', JSON.stringify(result));
+  if (result.err.caurse || result.err.code) {
+    await sendResult({ course: unelect, time: 'BAD！回抢失败！' }, result);
+  } else if (!muteOnSuccess) {
+    await sendResult({ course: unelect, time: '回抢成功' }, result);
+  }
+}
+
+/**
+ *
+ * @param {ElectPolicy} policy
  */
 async function tryElectCourse(policy) {
-  const { xkjdszid, type, match, unelect } = policy;
+  const { xkjdszid, type, match, unelect, force } = policy;
   const coursesList = await queryCourseList(xkjdszid);
   console.log(`获取${type}数据成功`);
   const target = coursesList.find((course) => {
-    if (!course.classId) return false;
+    if (!course.electable && !force) return false;
+    // 强制模式 || 非强制模式 and 有选课按钮
     return match(course);
   });
 
   if (target) {
-    sendProgressing(target).catch(e => console.error('发送正在抢课通知失败', e));
+    // 强制模式不发送正在抢课
+    if (!force) {
+      sendProgressing(target).catch(e => console.error('发送正在抢课通知失败', e));
+    }
     // 可能需要先退掉某门课
     if (unelect) {
       await op('unelect', xkjdszid, unelect);
     }
     const html = await op('elect', xkjdszid, target.classId);
-    await sendResult(target, html);
+    const result = await parseResult(html);
+    console.log(target.course, '抢课结果', JSON.stringify(result));
+    const failure = result.err.caurse || result.err.code;
+    const tasksAfterElect = [];
+    // 非强制模式 || 强制模式 and 成功
+    if (!force || !failure) {
+      tasksAfterElect.push(sendResult(target, result));
+    }
+    // 选课失败，回抢 unelect
+    if (unelect && failure) {
+      tasksAfterElect.push(electBack(xkjdszid, unelect, force));
+    }
+    await Promise.all(tasksAfterElect);
   } else {
     console.log(`没有找到符合要求的${type}`);
   }

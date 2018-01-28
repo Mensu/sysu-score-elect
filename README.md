@@ -136,6 +136,8 @@ export default {
       match: ({ time, course, teacher, classId }) => String(course).match(/数据挖掘/),
       // 可不填，表示选课前要先退出某门课
       // unelect: '62000098172001',
+      // 可不填，表示人满了的话是否还要继续抢课
+      // force: true,
     },
   ],
   // TODO

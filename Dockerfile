@@ -14,4 +14,4 @@ COPY . .
 RUN npm i && \
     cp docker/logrotate /etc/logrotate.d/sysu-score-elect && \
     mkdir -p /var/log/score /var/log/elect
-ENTRYPOINT node -r @std/esm lib/generate-vpn-config && sh docker/entrypoint.sh && sh
+ENTRYPOINT sh docker/entrypoint.sh && sh
