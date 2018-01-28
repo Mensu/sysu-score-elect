@@ -1,6 +1,6 @@
 {
   "name": "sysu-score-elect",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "中山大学查分抢课系统",
   "main": "index.js",
   "author": "Mensu <yxshw55@qq.com>",
@@ -10,7 +10,7 @@
     "url": "ssh://git@gitlab.vmatrix.org.cn:20/ChenYuxiang/sysu-score-elect.git"
   },
   "dependencies": {
-    "@std/esm": "^0.19.5",
+    "@std/esm": "^0.20.0",
     "cheerio": "^1.0.0-rc.2",
     "jimp": "^0.2.28",
     "moment": "^2.18.1",

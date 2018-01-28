@@ -61,8 +61,8 @@ async function queryScore(year, term, pylb) {
   if (term) url.searchParams.set('term', term);
   if (pylb) url.searchParams.set('pylb', pylb);
   let body = await req.get(url, { jar });
-  if (body === 'expired') {
-    console.log('登录失败');
+  if (body === 'expired' || body.length === 0) {
+    console.error('登录失败', `"${body}"`);
     return;
   }
   body = eval(`(${body})`).body.dataStores.kccjStore.rowSet.primary;
