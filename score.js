@@ -15,8 +15,8 @@ async function checkLogin() {
   while (true) {
     if (jar) {
       try {
-        const result = await req.get('http://wjw.sysu.edu.cn/api/tno', { jar });
-        if (result === 'expired') {
+        const result = await req.get('https://uems.sysu.edu.cn/jwxt/api/login/status', { jar, json: true });
+        if (result.data === 0) {
           jar = null;
         } else {
           return;
@@ -26,26 +26,27 @@ async function checkLogin() {
       }
     }
     console.log('重新登录中...');
-    jar = await login.wjw(...config.credentials);
+    jar = await login.jwxt(...config.credentials);
   }
 }
 
 const propsToDelete = [
-  'bzw', 'cjzt', 'cjlcId', 'kcywmc', 'jxbh', 'jxbmc', 'zpcj',
-  'khfs', 'kch', 'class', 'xf', 'xs',
+  'accessFlag', 'scoCourseCategoryName',
+  'scoCourseNumber', 'scoPoint', 'total',
 ];
 const propNamesMap = {
-  jxbpm: 'classRank',
-  jsxm: 'teacher',
-  zzcj: 'score',
-  xnd: 'year',
-  xq: 'term',
-  kcmc: 'course',
-  kclb: 'type',
-  jd: 'credit',
-  sftg: 'pass',
-  xh: 'studentId',
-  njzypm: 'totalRank',
+  rank: 'classRank',
+  scoTeacherName: 'teacher',
+  scoFinalScore: 'score',
+  scoSchoolYear: 'year',
+  scoSemester: 'term',
+  scoCourseName: 'course',
+  scoCourseCategory: 'type',
+  scoCredit: 'credit',
+  // sftg: 'pass',
+  scoStudentNumber: 'studentId',
+  // njzypm: 'totalRank',
+  teachClassNumber: 'resource_id',
 };
 const typeMap = {
   10: '公必',
@@ -53,27 +54,32 @@ const typeMap = {
   11: '专必',
   21: '专选',
 };
-async function queryScore(year, term, pylb) {
+/**
+ *
+ * @param {string} scoSchoolYear 学年
+ * @param {string} scoSemester 学期
+ * @param {string} trainTypeCode 培养类别代码
+ */
+async function queryScore(scoSchoolYear, scoSemester, trainTypeCode) {
   /* eslint no-eval: "off" */
   await checkLoginQueue.push(checkLogin);
-  const url = new URL('http://wjw.sysu.edu.cn/api/score');
-  if (year) url.searchParams.set('year', year);
-  if (term) url.searchParams.set('term', term);
-  if (pylb) url.searchParams.set('pylb', pylb);
-  let body = await req.get(url, { jar });
-  if (body === 'expired' || body.length === 0) {
-    console.error('登录失败', `"${body}"`);
-    return;
+  const url = new URL('https://uems.sysu.edu.cn/jwxt/achievement-manage/score-check/list');
+  if (scoSchoolYear) url.searchParams.set('scoSchoolYear', scoSchoolYear);
+  if (scoSemester) url.searchParams.set('scoSemester', scoSemester);
+  if (trainTypeCode) url.searchParams.set('trainTypeCode', trainTypeCode);
+  /** @type {{ code: number, data: ScoreResult[] }} */
+  const body = await req.get(url, { jar, json: true });
+  if (body.code !== 200 || !Array.isArray(body.data)) {
+    console.log('响应数据异常', body);
   }
-  body = eval(`(${body})`).body.dataStores.kccjStore.rowSet.primary;
-  body.forEach((one) => {
+  const { data } = body;
+  data.forEach((one) => {
     deleteProps(one, ...propsToDelete);
     replaceProp(one, propNamesMap);
-    propsToNum(one, 'score', 'term', 'credit', 'pass');
+    propsToNum(one, 'score', 'term');
     one.type = typeMap[one.type];
-    one.pass = Boolean(one.pass);
   });
-  return arr2Map(body, 'resource_id');
+  return arr2Map(data, 'resource_id');
 }
 
 let score = {};
@@ -127,7 +133,7 @@ function refactorScore(originalScore, newScores) {
   const ret = {};
   newScores.forEach((id) => {
     const { course, score, classRank, totalRank } = originalScore[id];
-    ret[course] = `分数: ${score}, 班级排名: ${classRank}, 年级排名: ${totalRank}`;
+    ret[course] = `分数: ${score}, 班级排名: ${classRank}`;
   });
   return ret;
 }

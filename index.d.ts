@@ -4,6 +4,7 @@ declare global {
   type Course = pug.Course
   type ElectPolicy = pug.ElectPolicy
   type ElectResult = pug.ElectResult
+  type ScoreResult = pug.ScoreResult
 }
 
 declare module 'pug' {
@@ -34,5 +35,26 @@ declare module 'pug' {
       code: number
     }
     code: number
+  }
+
+  interface ScoreResult {
+    classRank: string
+    type: '公选' | '公必' | '专选' | '专必'
+    course: string
+    credit: number
+    score: string
+    year: string
+    term: '1' | '2' | '3'
+    studentId: string
+    teacher: string
+    scoreList: {
+      /** 成绩 */
+      FXCJ: string
+      /** 类型 */
+      FXMC: string
+      /** 比例 */
+      MRQZ: string
+    }[]
+    resource_id: string
   }
 }
