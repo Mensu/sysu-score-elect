@@ -67,8 +67,9 @@ async function queryScore(scoSchoolYear, scoSemester, trainTypeCode) {
   if (scoSchoolYear) url.searchParams.set('scoSchoolYear', scoSchoolYear);
   if (scoSemester) url.searchParams.set('scoSemester', scoSemester);
   if (trainTypeCode) url.searchParams.set('trainTypeCode', trainTypeCode);
+  const qs = { addScoreFlag: false };
   /** @type {{ code: number, data: ScoreResult[] }} */
-  const body = await req.get(url, { jar, json: true });
+  const body = await req.get(url, { qs, jar, json: true });
   if (body.code !== 200 || !Array.isArray(body.data)) {
     console.log('响应数据异常', body);
   }
