@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: sysu-score-elect:1.2.0
+    image: sysu-score-elect:1.3.0
     container_name: sysu-score-elect
     volumes:
       - /TODO/config:/sysu-score-elect/config
