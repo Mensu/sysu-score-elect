@@ -10,7 +10,7 @@ const headers = { 'User-Agent': 'nodejs' };
 const req = request.defaults({ headers });
 const allow302 = { simple: false, resolveWithFullResponse: true };
 
-const checkLoginQueue = new BlockingQueue(60 * 60 * 1000);
+const checkLoginQueue = new BlockingQueue(2 * 60 * 1000);
 
 let jar = null;
 async function checkLogin() {
@@ -174,8 +174,10 @@ async function poll() {
 
 async function loop() {
   while (true) {
-    poll().catch(e => console.error('轮询未知错误', e));
-    await setTimeoutAsync(config.pollInterval.elect || 30 * 1000);
+    await Promise.all([
+      poll().catch(e => console.error('轮询未知错误', e)),
+      setTimeoutAsync(config.pollInterval.elect || 30 * 1000),
+    ]);
   }
 }
 

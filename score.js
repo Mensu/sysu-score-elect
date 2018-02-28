@@ -9,7 +9,7 @@ import BlockingQueue from './lib/BlockingQueue';
 const headers = { 'User-Agent': 'nodejs' };
 const req = request.defaults({ headers });
 
-const checkLoginQueue = new BlockingQueue(60 * 60 * 1000);
+const checkLoginQueue = new BlockingQueue(2 * 60 * 1000);
 let jar = null;
 async function checkLogin() {
   while (true) {
@@ -59,6 +59,7 @@ const typeMap = {
  * @param {string} scoSchoolYear 学年
  * @param {string} scoSemester 学期
  * @param {string} trainTypeCode 培养类别代码
+ * @return {Promise<Object<string, ScoreResult>>}
  */
 async function queryScore(scoSchoolYear, scoSemester, trainTypeCode) {
   /* eslint no-eval: "off" */
@@ -72,6 +73,7 @@ async function queryScore(scoSchoolYear, scoSemester, trainTypeCode) {
   const body = await req.get(url, { qs, jar, json: true });
   if (body.code !== 200 || !Array.isArray(body.data)) {
     console.log('响应数据异常', body);
+    return;
   }
   const { data } = body;
   data.forEach((one) => {
@@ -83,6 +85,7 @@ async function queryScore(scoSchoolYear, scoSemester, trainTypeCode) {
   return arr2Map(data, 'resource_id');
 }
 
+/** @type {Object<string, ScoreResult>} */
 let score = {};
 async function poll() {
   console.log('');
@@ -108,8 +111,10 @@ async function poll() {
 
 async function loop() {
   while (true) {
-    poll().catch(e => console.error('轮询未知错误', e));
-    await sleep();
+    await Promise.all([
+      poll().catch(e => console.error('轮询未知错误', e)),
+      sleep(),
+    ]);
   }
 }
 
@@ -130,7 +135,13 @@ async function sleep() {
   await setTimeoutAsync(milliseconds);
 }
 
+/**
+ *
+ * @param {Object<string, ScoreResult>} originalScore
+ * @param {string[]} newScores
+ */
 function refactorScore(originalScore, newScores) {
+  /** @type {Object<string, string>} */
   const ret = {};
   newScores.forEach((id) => {
     const { course, score, classRank, totalRank } = originalScore[id];

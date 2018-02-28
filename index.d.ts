@@ -47,14 +47,14 @@ declare module 'pug' {
     term: '1' | '2' | '3'
     studentId: string
     teacher: string
-    scoreList: {
-      /** 成绩 */
-      FXCJ: string
-      /** 类型 */
-      FXMC: string
-      /** 比例 */
-      MRQZ: string
-    }[]
+    // scoreList: {
+    //   /** 分项成绩 */
+    //   FXCJ: string
+    //   /** 分项名称 */
+    //   FXMC: string
+    //   /** 默认权重 */
+    //   MRQZ: string
+    // }[]
     resource_id: string
   }
 }
