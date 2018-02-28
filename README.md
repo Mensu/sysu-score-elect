@@ -121,7 +121,7 @@ export default {
   // 注释掉 vpn 则不使用 vpn
   vpn: {
     remote: 'vpn.sysu.org.cn',
-    // 可选，如果不填，则使用上面的 credential
+    // 可选，如果不填，则使用上面的 credentials
     // username: 'username',
     // password: 'password',
   },
