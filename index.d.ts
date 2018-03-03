@@ -33,6 +33,7 @@ declare module 'pug' {
     err: {
       caurse: string
       code: number
+      cause?: string
     }
     code: number
   }
