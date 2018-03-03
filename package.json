@@ -1,6 +1,6 @@
 {
   "name": "sysu-score-elect",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "中山大学查分抢课系统",
   "main": "index.js",
   "author": "Mensu <yxshw55@qq.com>",
