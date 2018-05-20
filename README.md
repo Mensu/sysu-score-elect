@@ -12,7 +12,7 @@ brew install tesseract
 ```sh
 npm i
 # 直接启动
-node -r @std/esm elect.js
+node -r esm elect.js
 # 或者通过 pm2
 npm i -S -g pm2
 pm2 startOrReload deploy.json
@@ -55,7 +55,7 @@ docker-compose down
     "script"    : "elect.js",
     "instances" : "1",
     "exec_mode" : "cluster",
-    "node_args": ["-r", "@std/esm"],
+    "node_args": ["-r", "esm"],
     "cwd": "/sysu-score-elect",
     "watch"             : false,
     "log_date_format"   : "YYYY-MM-DD HH:mm:ss.SSS",
@@ -68,7 +68,7 @@ docker-compose down
     "script"    : "score.js",
     "instances" : "1",
     "exec_mode" : "cluster",
-    "node_args": ["-r", "@std/esm"],
+    "node_args": ["-r", "esm"],
     "cwd": "/sysu-score-elect",
     "watch"             : false,
     "log_date_format"   : "YYYY-MM-DD HH:mm:ss.SSS",

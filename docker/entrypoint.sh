@@ -6,7 +6,7 @@ crond
 # launch pm2d
 pm2 l
 # attempt to generate vpn config
-node -r @std/esm lib/generate-vpn-config.js
+node -r esm lib/generate-vpn-config.js
 # if vpn config file generated
 if test -f "/etc/ppp/peers/sysu"; then
   # connect to pptp
