@@ -2,7 +2,7 @@ import { URL } from 'url';
 import request from 'request-promise-native';
 import config from './config';
 import * as login from './lib/login';
-import BlockingQueue from './lib/BlockingQueue';
+import TaskQueue from './lib/TaskQueue';
 import { setTimeoutAsync, parseAsync } from './lib/utils';
 import { sendProgressing, sendResult } from './lib/notification';
 
@@ -10,7 +10,7 @@ const headers = { 'User-Agent': 'nodejs' };
 const req = request.defaults({ headers });
 const allow302 = { simple: false, resolveWithFullResponse: true };
 
-const checkLoginQueue = new BlockingQueue(2 * 60 * 1000);
+const checkLoginQueue = new TaskQueue(1, 2 * 60 * 1000);
 
 let jar = null;
 async function checkLogin() {
@@ -46,7 +46,7 @@ const propNames = [
  * @param {string} xkjdszid
  */
 async function queryCourseList(xkjdszid) {
-  await checkLoginQueue.push(checkLogin);
+  await checkLoginQueue.add(checkLogin);
   const location = new URL(jar.location);
   const sid = location.searchParams.get('sid');
   const url = new URL('https://uems.sysu.edu.cn/elect/s/courses?xqm=4&fromSearch=false');

@@ -10,25 +10,18 @@
     "url": "ssh://git@gitlab.vmatrix.org.cn:20/ChenYuxiang/sysu-score-elect.git"
   },
   "dependencies": {
-    "@std/esm": "^0.23.2",
     "cheerio": "^1.0.0-rc.2",
+    "esm": "^3.0.36",
     "jimp": "^0.2.28",
     "moment": "^2.18.1",
     "nodemailer": "^4.4.1",
     "pug": "^2.0.0-rc.3",
-    "request": "^2.81.0",
+    "request": "^2.86.0",
     "request-promise-native": "^1.0.4"
   },
   "devDependencies": {
     "eslint": "^4.15.0",
     "eslint-config-airbnb-base": "^12.1.0",
-    "eslint-plugin-import": "^2.8.0"
-  },
-  "@std/esm": {
-    "cjs": {
-      "namedExports": true,
-      "vars": true
-    },
-    "esm": "js"
+    "eslint-plugin-import": "^2.12.0"
   }
 }

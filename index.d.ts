@@ -40,6 +40,7 @@ declare module 'pug' {
 
   interface ScoreResult {
     classRank: string
+    totalRank: string
     type: '公选' | '公必' | '专选' | '专必'
     course: string
     credit: number
@@ -48,14 +49,14 @@ declare module 'pug' {
     term: '1' | '2' | '3'
     studentId: string
     teacher: string
-    // scoreList: {
-    //   /** 分项成绩 */
-    //   FXCJ: string
-    //   /** 分项名称 */
-    //   FXMC: string
-    //   /** 默认权重 */
-    //   MRQZ: string
-    // }[]
+    scoreList: {
+      /** 分项成绩 */
+      FXCJ: string
+      /** 分项名称 */
+      FXMC: string
+      /** 默认权重 */
+      MRQZ: string
+    }[]
     resource_id: string
   }
 }

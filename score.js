@@ -4,12 +4,12 @@ import config from './config';
 import * as login from './lib/login';
 import { deleteProps, replaceProp, propsToNum, arr2Map, setTimeoutAsync } from './lib/utils';
 import { sendScore } from './lib/notification';
-import BlockingQueue from './lib/BlockingQueue';
+import TaskQueue from './lib/TaskQueue';
 
 const headers = { 'User-Agent': 'nodejs' };
 const req = request.defaults({ headers });
 
-const checkLoginQueue = new BlockingQueue(2 * 60 * 1000);
+const checkLoginQueue = new TaskQueue(1, 2 * 60 * 1000);
 let jar = null;
 async function checkLogin() {
   while (true) {
@@ -31,28 +31,21 @@ async function checkLogin() {
 }
 
 const propsToDelete = [
-  'accessFlag', 'scoCourseCategoryName',
-  'scoCourseNumber', 'scoPoint', 'total',
+  'accessFlag', 'examCharacter', 'gradeMajorNumber', 'jdjs', 'originalScore',
+  'recordStyle', 'scoCourseCategory', 'scoCourseNumber', 'scoPoint', 'teachNumber', 'tjjs',
 ];
 const propNamesMap = {
-  rank: 'classRank',
+  teachClassRank: 'classRank',
+  gradeMajorRank: 'totalRank',
   scoTeacherName: 'teacher',
   scoFinalScore: 'score',
   scoSchoolYear: 'year',
   scoSemester: 'term',
   scoCourseName: 'course',
-  scoCourseCategory: 'type',
+  scoCourseCategoryName: 'type',
   scoCredit: 'credit',
-  // sftg: 'pass',
   scoStudentNumber: 'studentId',
-  // njzypm: 'totalRank',
   teachClassNumber: 'resource_id',
-};
-const typeMap = {
-  10: '公必',
-  30: '公选',
-  11: '专必',
-  21: '专选',
 };
 /**
  *
@@ -62,13 +55,12 @@ const typeMap = {
  * @return {Promise<Object<string, ScoreResult>>}
  */
 async function queryScore(scoSchoolYear, scoSemester, trainTypeCode) {
-  /* eslint no-eval: "off" */
-  await checkLoginQueue.push(checkLogin);
+  await checkLoginQueue.add(checkLogin);
   const url = new URL('https://uems.sysu.edu.cn/jwxt/achievement-manage/score-check/list');
   if (scoSchoolYear) url.searchParams.set('scoSchoolYear', scoSchoolYear);
   if (scoSemester) url.searchParams.set('scoSemester', scoSemester);
   if (trainTypeCode) url.searchParams.set('trainTypeCode', trainTypeCode);
-  const qs = { addScoreFlag: false };
+  const qs = { addScoreFlag: true };
   /** @type {{ code: number, data: ScoreResult[] }} */
   const body = await req.get(url, { qs, jar, json: true });
   if (body.code !== 200 || !Array.isArray(body.data)) {
@@ -80,7 +72,6 @@ async function queryScore(scoSchoolYear, scoSemester, trainTypeCode) {
     deleteProps(one, ...propsToDelete);
     replaceProp(one, propNamesMap);
     propsToNum(one, 'score', 'term');
-    one.type = typeMap[one.type];
   });
   return arr2Map(data, 'resource_id');
 }
@@ -144,8 +135,9 @@ function refactorScore(originalScore, newScores) {
   /** @type {Object<string, string>} */
   const ret = {};
   newScores.forEach((id) => {
-    const { course, score, classRank, totalRank } = originalScore[id];
-    ret[course] = `分数: ${score}, 班级排名: ${classRank}`;
+    const { course, score, classRank, totalRank, scoreList } = originalScore[id];
+    const items = scoreList.map(one => `${one.FXMC}${one.FXCJ}`).join(', ');
+    ret[course] = `分数: ${score}, 年级排名: ${totalRank}, ${items}`;
   });
   return ret;
 }
